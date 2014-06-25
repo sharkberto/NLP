@@ -1,0 +1,31 @@
+
+#normalize text so that all are lower case to mediate issue of match finding due to case-sensitivity
+
+import re
+
+
+with open('source1.txt', 'r+') as source1:
+    source_list = source1.readlines()
+    source_list = [x.strip('\n') for x in source_list] 
+with open('sourceref.txt') as sourceref:
+    sourceref_list = sourceref.readlines()
+    sourceref_list = [x.strip('\n') for x in sourceref_list]
+with open('targetref.txt') as targetref:
+    targetref_list = targetref.readlines()
+    targetref_list = [x.strip('\n') for x in targetref_list]
+    # targetref_list = [x.encode('latin-1') for x in targetref_list]
+notes = open(r'notes.txt', 'w')
+
+
+for count in range(len(source_list)):
+    for i in range(len(sourceref_list)):
+        if i == len(sourceref_list):
+            notes.write("\n")
+        if sourceref_list[i] in source_list[count]: #go through file just once but treating the file as alist
+            notes.write(" [ " + sourceref_list[i] + " = " + targetref_list[i] + " ] ") #write both source and target terms on one line
+        else:
+            if i==len(sourceref_list)-1:
+                notes.write("\n")
+            next        
+
+notes.close()
