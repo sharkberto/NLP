@@ -1,0 +1,39 @@
+from __future__ import division
+import nltk, re, pprint, codecs, nltk.data
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+sent_tokenize = nltk.data.load('tokenizers/punkt/spanish.pickle')
+path = 'C:/Users/Alex/Downloads/2013-NCRE6478-SA-LIT_Spanish_plain.txt'
+with codecs.open(path) as source:
+    raw = [x.strip('\n') for x in source] ##use ( )  to create generator, instead of list
+    raw = str(raw)
+    sents = sent_tokenize.tokenize(raw)
+    
+    #Word Tokenize
+tokens = word_tokenize(raw)
+#Make lower case
+tokens = [w.lower() for w in tokens]
+#Remove stopwords
+tokens = [w for w in tokens if w not in stopwords.words('spanish')]
+#POS tag the tokens
+tagged_tokens = nltk.pos_tag(tokens)
+##Create Nltk.text class
+text = nltk.Text(tokens)
+
+from nltk.probability import FreqDist
+vocab = [w for w in tokens if len(w) > 5]
+fdist1 = FreqDist(vocab)
+
+fdist1.plot(50)
+
+hapax_list = sorted(set(fdist1.hapaxes()))
+
+from nltk.collocations import *
+bigram_measures = nltk.collocations.BigramAssocMeasures()
+tokensnp = nltk.tokenize.RegexpTokenizer(r'\w+').tokenize(str(vocab))
+finder = BigramCollocationFinder.from_words(tokensnp)
+finder.apply_freq_filter(3)
+print finder.nbest(bigram_measures.pmi, 100)
+
+for k,v in finder.nbest(bigram_measures.pmi, 100):
+    print k,v
